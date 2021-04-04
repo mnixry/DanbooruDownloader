@@ -36,7 +36,7 @@ jobs:
       
     - name: Publish with ${{ matrix.runtime }} 
       run: |
-        dotnet publish --no-build -v d -c Release \
+        dotnet publish -v d -c Release \
           --runtime ${{ matrix.runtime }} \
           --output ./build \
           --self-contained true \
