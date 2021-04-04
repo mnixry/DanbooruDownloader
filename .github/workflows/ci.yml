@@ -41,7 +41,6 @@ jobs:
           --output ./build \
           --self-contained true \
           -p:PublishSingleFile=true \
-          -p:PublishReadyToRun=true \
           -p:PublishTrimmed=true
     
     - name: Minify binary with UPX
