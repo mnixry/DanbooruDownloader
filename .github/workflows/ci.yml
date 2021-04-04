@@ -1,0 +1,74 @@
+
+
+
+
+
+
+
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        runtime: 
+          - win-x64
+          - win-x86
+          - win-arm
+          - win-arm64
+          - linux-x64 
+          - linux-musl-x64
+          - linux-arm
+          - linux-arm64
+          - osx-x64
+      fail-fast: true
+
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    
+    - name: Restore depends
+      run: dotent restore -v
+    
+    - name: Build project
+      run: dotnet build -v --no-resotre
+      
+    - name: Publish with ${{ matrix.runtime }} 
+      run: |
+        dotnet publish --no-build -v -c Release \
+          --runtime ${{ matrix.runtime }} \
+          --output ./build \
+          --self-contained true \
+          -p:PublishSingleFile=true \
+          -p:PublishReadyToRun=true \
+          -p:PublishTrimmed=true
+    
+    - name: Minify binary with UPX
+      # You may pin to the exact commit or the version.
+      # uses: crazy-max/ghaction-upx@4910783e91e8d4946c9d220bca71346992ae3956
+      uses: crazy-max/ghaction-upx@v1.4.0
+      with:
+        # Newline-delimited list of path globs for files to compress
+        files: ./build/*
+        # Arguments to pass to UPX
+        args: "-9"
+      
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.runtime }}
+        path: ./build/*
