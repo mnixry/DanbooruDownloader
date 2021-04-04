@@ -36,12 +36,13 @@ jobs:
       
     - name: Publish with ${{ matrix.runtime }} 
       run: |
-        dotnet publish -v d -c Release \
+        dotnet publish -v n -c Release \
           --runtime ${{ matrix.runtime }} \
           --output ./build \
           --self-contained true \
           -p:PublishSingleFile=true \
           -p:PublishTrimmed=true
+        rm -v ./build/*.pdb
     
     - name: Minify binary with UPX
       # You may pin to the exact commit or the version.
